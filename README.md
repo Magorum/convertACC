@@ -1,6 +1,8 @@
 # convertACC
 quick script for converting ACC codec files in either the dolphin or nautilis file manager
 
+NOTE: It will delete the old files after converting them
+
 
 # For Nautilus / Gnome File Manager
 ```
