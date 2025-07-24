@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Check if an argument was passed
+if [ -n "$1" ]; then
+path="$1"
+elif [ -n "$NAUTILUS_SCRIPT_SELECTED_URIS" ]; then
+path="$NAUTILUS_SCRIPT_SELECTED_URIS"
+elif [ -n "$NAUTILUS_SCRIPT_CURRENT_URI" ]; then
+path="$NAUTILUS_SCRIPT_CURRENT_URI"
+else
+echo "Usage: $0 <path>"
+exit 1
+fi
+
+
+# Check if it's a file
+if [ -f "$path" ]; then
+    filename_no_extension="${path%.*}"
+
+    ffmpeg -i "$path" -acodec mp3 -vcodec copy "$filename_no_extension.tmp.mp4"
+    rm "$path" && mv "$filename_no_extension.tmp.mp4" "$path"
+
+
+# Check if it's a directory
+elif [ -d "$path" ]; then
+
+for input_file in "$path"/*; do
+    # Check if the item is a file (not a directory)
+    if [ -f "$input_file" ]; then
+        # Extract the filename without extension
+        filename=$(basename -- "$input_file")
+        filename_no_extension="${filename%.*}"
+        
+        # Create a directory for this file's output
+        file_output_dir="$path/tmp"
+        mkdir -p "$file_output_dir"
+        
+        # Your FFmpeg command here
+        ffmpeg -i "$input_file" -acodec mp3 -vcodec copy "$file_output_dir/$filename_no_extension.mp4"
+        echo "Processed: $input_file"
+        rm "$input_file"
+        
+    fi
+done
+mv $file_output_dir/* "$path" && rmdir "$file_output_dir"
+
+echo "All files processed!"
+# If it's neither
+else
+    echo "'$path' is neither a file nor a directory."
+fi

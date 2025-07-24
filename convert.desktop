@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Service
+MimeType=video/mp4;inode/directory;
+Actions=convertACC
+
+
+[Desktop Action convertACC]
+Name=Convert ACC to mp3 
+Icon=tv
+Exec=convertACC "%u"
